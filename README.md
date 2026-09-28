@@ -42,7 +42,8 @@ the new tab's panes and runs the agent command in the pane with `herdr pane run`
 Splits raise pane events rather than `tab.created`, so they never trigger it.
 
 It leaves a tab alone if it is the only tab in its workspace, has more than one
-pane, or already has an agent in it. That keeps it from starting a second agent in a tab that session
+pane, already has an agent in it, or its shell is busy running a command (for
+example a pane you moved into a new tab with `herdr pane move --new-tab`). That keeps it from starting a second agent in a tab that session
 restore brought back with `resume_agents_on_restore`.
 
 ## Turn it off

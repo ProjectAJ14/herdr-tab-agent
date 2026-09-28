@@ -28,6 +28,14 @@ class TargetPane(unittest.TestCase):
         self.assertIsNone(on_tab.target_pane(TAB, [TAB], panes))
 
 
+class ShellIsIdle(unittest.TestCase):
+    def test_shell_at_prompt(self):
+        self.assertTrue(on_tab.shell_is_idle({"foreground_process_group_id": 7, "shell_pid": 7}))
+
+    def test_command_running(self):
+        self.assertFalse(on_tab.shell_is_idle({"foreground_process_group_id": 9, "shell_pid": 7}))
+
+
 class AgentCommand(unittest.TestCase):
     def test_default(self):
         with tempfile.TemporaryDirectory() as d:
