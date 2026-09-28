@@ -5,22 +5,27 @@ import unittest
 import on_tab
 
 TAB = {"tab_id": "w1:t2", "workspace_id": "w1"}
+TABS = [{"tab_id": "w1:t1", "workspace_id": "w1"}, TAB]
 
 
 class TargetPane(unittest.TestCase):
     def test_fresh_tab(self):
         panes = [{"pane_id": "w1:p1", "tab_id": "w1:t1", "agent": "claude"},
                  {"pane_id": "w1:p2", "tab_id": "w1:t2"}]
-        self.assertEqual(on_tab.target_pane(TAB, panes), "w1:p2")
+        self.assertEqual(on_tab.target_pane(TAB, TABS, panes), "w1:p2")
 
     def test_tab_with_agent_is_left_alone(self):
         panes = [{"pane_id": "w1:p2", "tab_id": "w1:t2", "agent": "claude"}]
-        self.assertIsNone(on_tab.target_pane(TAB, panes))
+        self.assertIsNone(on_tab.target_pane(TAB, TABS, panes))
 
     def test_restored_multi_pane_tab_is_left_alone(self):
         panes = [{"pane_id": "w1:p2", "tab_id": "w1:t2"},
                  {"pane_id": "w1:p3", "tab_id": "w1:t2"}]
-        self.assertIsNone(on_tab.target_pane(TAB, panes))
+        self.assertIsNone(on_tab.target_pane(TAB, TABS, panes))
+
+    def test_first_tab_of_workspace_stays_a_shell(self):
+        panes = [{"pane_id": "w1:p2", "tab_id": "w1:t2"}]
+        self.assertIsNone(on_tab.target_pane(TAB, [TAB], panes))
 
 
 class AgentCommand(unittest.TestCase):

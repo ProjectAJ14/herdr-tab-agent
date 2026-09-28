@@ -4,10 +4,11 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A [Herdr](https://herdr.dev) plugin that makes every **new tab** open straight
-into a coding agent (Claude Code by default), while **split panes** stay plain
-shells.
+into a coding agent (Claude Code by default), while a workspace's **first tab**
+and all **split panes** stay plain shells.
 
 ```
+new workspace (its first tab)       →  ordinary shell
 prefix+c / "+" / herdr tab create   →  new tab running `claude`
 prefix+v / prefix+minus (split)     →  new pane, ordinary shell
 ```
@@ -40,8 +41,8 @@ The plugin subscribes to Herdr's `tab.created` event. When it fires, it looks up
 the new tab's panes and runs the agent command in the pane with `herdr pane run`.
 Splits raise pane events rather than `tab.created`, so they never trigger it.
 
-It leaves a tab alone if the tab already has more than one pane or already has an
-agent in it. That keeps it from starting a second agent in a tab that session
+It leaves a tab alone if it is the only tab in its workspace, has more than one
+pane, or already has an agent in it. That keeps it from starting a second agent in a tab that session
 restore brought back with `resume_agents_on_restore`.
 
 ## Turn it off
