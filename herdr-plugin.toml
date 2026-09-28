@@ -1,0 +1,14 @@
+# Herdr Tab Agent plugin manifest.
+
+id = "herdr.tab-agent"
+name = "Tab Agent"
+version = "0.1.0"
+min_herdr_version = "0.8.0"
+description = "Starts a coding agent (Claude Code by default) in every new tab; split panes stay plain shells"
+platforms = ["linux", "macos"]
+
+# Fires once per new tab. Splits raise pane events, not this one, so they
+# keep their shell.
+[[events]]
+on = "tab.created"
+command = ["python3", "on_tab.py"]

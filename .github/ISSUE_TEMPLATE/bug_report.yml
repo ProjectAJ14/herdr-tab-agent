@@ -1,0 +1,24 @@
+name: Bug report
+description: A new tab didn't start its agent, or a pane started one it shouldn't have
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what you expected
+      placeholder: "Opened a tab with prefix+c and it stayed a plain shell"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Plugin log
+      description: "`herdr plugin log list --plugin herdr.tab-agent --limit 5`"
+      render: text
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      placeholder: "herdr 0.9.1, python 3.12, macOS 26"
+    validations:
+      required: true
