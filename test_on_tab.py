@@ -36,6 +36,22 @@ class ShellIsIdle(unittest.TestCase):
         self.assertFalse(on_tab.shell_is_idle({"foreground_process_group_id": 9, "shell_pid": 7}))
 
 
+class WaitForPrompt(unittest.TestCase):
+    def poll(self, states, timeout=1.0):
+        infos = iter({"foreground_process_group_id": fg, "shell_pid": 7} for fg in states)
+        orig, on_tab.herdr = on_tab.herdr, lambda *a: {"process_info": next(infos)}
+        try:
+            return on_tab.wait_for_prompt("w1:p2", timeout=timeout)
+        finally:
+            on_tab.herdr = orig
+
+    def test_waits_for_shell_startup(self):
+        self.assertTrue(self.poll([9, 9, 7]))
+
+    def test_gives_up_on_busy_pane(self):
+        self.assertFalse(self.poll([9] * 100, timeout=0.3))
+
+
 class AgentCommand(unittest.TestCase):
     def test_default(self):
         with tempfile.TemporaryDirectory() as d:

@@ -2,6 +2,7 @@
 import json
 import os
 import subprocess
+import time
 
 DEFAULT_COMMAND = "claude"
 HERDR = os.environ.get("HERDR_BIN_PATH") or "herdr"
@@ -47,7 +48,23 @@ def herdr(*args):
     out = subprocess.run(
         [HERDR, *args], capture_output=True, text=True, check=True,
     ).stdout
-    return json.loads(out)["result"]
+    # pane run prints nothing on success.
+    return json.loads(out)["result"] if out.strip() else None
+
+
+def wait_for_prompt(pane, timeout=10.0):
+    """Poll until the new tab's shell reaches its prompt.
+
+    tab.created fires before zsh finishes starting, while its rc files still
+    hold the foreground; checking once there skips every tab.
+    """
+    deadline = time.monotonic() + timeout
+    while True:
+        if shell_is_idle(herdr("pane", "process-info", "--pane", pane)["process_info"]):
+            return True
+        if time.monotonic() > deadline:
+            return False
+        time.sleep(0.2)
 
 
 def main():
@@ -55,7 +72,7 @@ def main():
     tabs = herdr("tab", "list", "--workspace", tab["workspace_id"])["tabs"]
     panes = herdr("pane", "list", "--workspace", tab["workspace_id"])["panes"]
     pane = target_pane(tab, tabs, panes)
-    if pane and shell_is_idle(herdr("pane", "process-info", "--pane", pane)["process_info"]):
+    if pane and wait_for_prompt(pane):
         herdr("pane", "run", pane, agent_command())
 
 
